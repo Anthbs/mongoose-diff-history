@@ -204,6 +204,12 @@ const plugin = function lastModifiedPlugin(schema, opts = {}) {
             .then(() => next())
             .catch(next);
     });
+    
+    schema.pre('updateMany', function (next) {
+        saveDiffs(this, opts)
+            .then(() => next())
+            .catch(next);
+    });
 
     schema.pre('remove', function (next) {
         saveDiffObject(this, this, {}, opts)
