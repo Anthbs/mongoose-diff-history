@@ -71,6 +71,7 @@ function saveDiffObject(currentObject, original, updated, opts, queryObject) {
 /* eslint-disable complexity */
 
 const saveDiffHistory = (queryObject, currentObject, opts) => {
+  delete queryObject._update["$setOnInsert"];
   const updateParams = queryObject._update['$set'] || queryObject._update;
   const dbObject = pick(currentObject, Object.keys(updateParams));
   return saveDiffObject(currentObject, dbObject, updateParams, opts, queryObject.options);
