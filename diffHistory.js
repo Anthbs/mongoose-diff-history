@@ -54,18 +54,22 @@ function saveDiffObject(currentObject, original, updated, opts, queryObject) {
     return History.findOne({ collectionId, collectionName })
         .sort('-version')
         .then(lastHistory => {
-            const history = new History({
-                collectionId,
-                collectionName,
-                diff,
-                user,
-                reason,
-                version: lastHistory ? lastHistory.version + 1 : 0
-            });
-            if (session) {
-                return history.save({ session });
+            try {
+                const history = new History({
+                    collectionId,
+                    collectionName,
+                    diff,
+                    user,
+                    reason,
+                    version: lastHistory ? lastHistory.version + 1 : 0
+                });
+                if (session) {
+                    return history.save({ session });
+                }
+                return history.save();
+            } catch(e) {
+                console.log("Couldnt save history", e);
             }
-            return history.save();
         });
 }
 /* eslint-disable complexity */
