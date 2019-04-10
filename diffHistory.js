@@ -75,10 +75,24 @@ function saveDiffObject(currentObject, original, updated, opts, queryObject) {
 /* eslint-disable complexity */
 
 const saveDiffHistory = (queryObject, currentObject, opts) => {
+  const update = JSON.parse(JSON.stringify(queryObject._update));
+  /* eslint-disable security/detect-object-injection */
+  const updateParams = Object.assign(...Object.keys(update).map(function(key) {
+    if(typeof update[key] === "object") {
+      return update[key];
+    }
+    return update;
+  }));
+  /* eslint-enable security/detect-object-injection */
   delete queryObject._update["$setOnInsert"];
-  const updateParams = queryObject._update['$set'] || queryObject._update;
   const dbObject = pick(currentObject, Object.keys(updateParams));
-  return saveDiffObject(currentObject, dbObject, updateParams, opts, queryObject.options);
+  return saveDiffObject(
+    currentObject,
+    dbObject,
+    assign(dbObject, queryObject._update),
+    opts,
+    queryObject
+  );
 };
 
 const saveDiffs = (queryObject, opts) =>
